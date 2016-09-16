@@ -20,6 +20,7 @@ public class EnemyAiOne : MonoBehaviour
 	//public float timer = 1.0f;
 	public Transform goal;
 	//public float stoppingDistance;
+	public float timer = 1.0f;
 
 	void Awake ()
 	{
@@ -43,9 +44,16 @@ public class EnemyAiOne : MonoBehaviour
 
 	public void OnTriggerStay(Collider other)
 	{
-		if (other.gameObject.tag == "Tower") 
+		if(other.gameObject.tag == "Tower")
 		{
-			other.gameObject.GetComponent<TowerHealth> ().EnemyHit ();
+			if (timer <= 0) 
+			{
+				other.gameObject.GetComponent<TowerHealth> ().EnemyHit ();
+				timer = 0.5f;
+			}
+			timer -= Time.deltaTime;
+			print (timer);
+
 		}
 	}
 }
