@@ -1,39 +1,62 @@
 ﻿using UnityEngine;
+using UnityEngine.VR;
 using System.Collections;
 
 public class WeaponsWheel : MonoBehaviour
 {
-    public GameObject[] weapons;
+    public GameObject _camera;
+    public GameObject disc;
 
+    public GameObject[] weapons;
+    
     public GameObject currentWeapon;
 
     private int weaponNumber = 0;
+    float rotationAmount;
+    float newY;
+    float timer;
+    bool rotating = false;
+
+    enum Direction
+    {
+        Right,
+        Left,
+    }
+
+    Direction dir = Direction.Right;
 
     void Start()
     {
+        OVRTouchpad.Create();
+        OVRTouchpad.TouchHandler += HandleTouchHandler;
         //Set Current weapon to 0
         currentWeapon = weapons[0];
+        rotationAmount = 360.0f / weapons.Length;
     }
 
-    void Update()
+    void HandleTouchHandler(object sender, System.EventArgs e)
     {
-        // Get Input From The Mouse Wheel
-        // if mouse wheel gives a positive value add 1 to weaponNumber
-        // if it gives a negative value decrease weaponNumber with 1
-        if (Input.GetAxis("Mouse ScrollWheel") > 0)
+        OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
+
+        if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Left)
         {
-            if (weaponNumber == weapons.Length-1)
+            if (weaponNumber == weapons.Length - 1)
             {
-                weaponNumber = 0;
+                weaponNumber = 0;                
             }
             else
             {
                 weaponNumber = (weaponNumber + 1);
             }
+
+            if(!rotating)
+                dir = Direction.Left;
+
+            StartCoroutine(RotateCoroutine());
         }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0 )
+        else if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Right)
         {
-            if (weaponNumber ==0)
+            if (weaponNumber == 0)
             {
                 weaponNumber = weapons.Length - 1;
             }
@@ -41,7 +64,71 @@ public class WeaponsWheel : MonoBehaviour
             {
                 weaponNumber = (weaponNumber - 1);
             }
+
+            if (!rotating)
+                dir = Direction.Right;
+
+            StartCoroutine(RotateCoroutine());
         }
+
         currentWeapon = weapons[weaponNumber];
+    }
+
+    IEnumerator RotateCoroutine()
+    {
+        if(!rotating)
+        {
+            rotating = true;
+            if (dir == Direction.Left)
+            {
+                newY = disc.transform.localRotation.eulerAngles.y - rotationAmount;
+            }
+            else if (dir == Direction.Right)
+            {
+                newY = disc.transform.localRotation.eulerAngles.y + rotationAmount;
+            }
+
+            yield return new WaitUntil(RotateWeapons);
+            timer = 0;
+            rotating = false;
+        }
+    }
+
+    bool RotateWeapons()
+    {
+        timer += 1 / 60.0f;
+        if (dir == Direction.Left)
+        {
+            disc.transform.localRotation = Quaternion.Lerp(disc.transform.localRotation, Quaternion.Euler(0, newY, 0), Time.deltaTime * 8f);
+            if (disc.transform.localRotation.eulerAngles.y <= newY + .05f)
+                return true;
+            else
+                return false;
+        }
+        else if (dir == Direction.Right)
+        {
+            disc.transform.localRotation = Quaternion.Lerp(disc.transform.localRotation, Quaternion.Euler(0, newY, 0), Time.deltaTime * 8f);
+            if (disc.transform.localRotation.eulerAngles.y >= newY - .05f)
+                return true;
+            else
+                return false;
+        }
+        else
+            return false;
+    }
+
+    void Update()
+    {
+        if (timer >= .75f)
+        {
+            StopAllCoroutines();
+            timer = 0;
+            rotating = false;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        transform.rotation = Quaternion.Euler(0, _camera.transform.rotation.eulerAngles.y, 0);
     }
 }

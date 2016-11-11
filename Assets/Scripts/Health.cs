@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TowerHealth : MonoBehaviour 
+public class Health : MonoBehaviour 
 {
 	public float maxHealth = 100f;
 	public float curHealth = 0f;
@@ -15,7 +15,7 @@ public class TowerHealth : MonoBehaviour
 		curHealth = maxHealth;
 	}
 
-	public void EnemyHit(int damage)
+	public void TakeDamage(int damage)
 	{    
 	    curHealth -= damage;
 

@@ -4,43 +4,58 @@ using System.Collections;
 
 public class Launcher : MonoBehaviour 
 {
+    public LayerMask _layerMask;
     // handles
     [SerializeField] private Transform _bullseye;    // target transform
     public GameObject projectile;
+    public GameObject lookatTarget;
 
     // Editor variables
-    public float _targetRange;  
+    [SerializeField]
+    public float _targetRange;
+    [SerializeField]
     public float _angle;      // shooting angle
+    [SerializeField]
     public float maxHeight;
-    float time = 2;
 
-    private bool _targetReady;
+    public bool _targetReady;
 
     RaycastHit hit;
 
-    float g;
-
     void Start()
     {
-        g = Physics.gravity.y;
+        OVRTouchpad.Create();
+        OVRTouchpad.TouchHandler += HandleTouchHandler;
+    }
+
+    void HandleTouchHandler(object sender, System.EventArgs e)
+    {
+        OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
+
+        if(touchArgs.TouchType == OVRTouchpad.TouchEvent.SingleTap)
+        {
+            _targetReady = true;
+            Launch();
+        }
     }
 
     void Update()
     {
-        if (Input.GetButtonDown("Fire1") && _targetReady)
-        {
-            Launch();
-        }
+        //if (Input.GetButtonDown("Fire1") && _targetReady)
+        //{
+        //    Launch();
+        //}
     }    
 
 	void FixedUpdate () 
     {
         Ray ray = new Ray(transform.position, transform.forward);
 
-        if(Physics.Raycast(ray, out hit))
+        if(Physics.Raycast(ray, out hit, _layerMask))
         {
             if(hit.transform.tag == "Ground")
             {
+                _targetReady = true;
                 AcquireTarget(hit.point);
             }
         }
@@ -48,20 +63,22 @@ public class Launcher : MonoBehaviour
 
     private void Launch()
     {
-        GameObject clone = Instantiate(projectile, transform.position, transform.rotation) as GameObject;
+        //GameObject lookatTargetClone = Instantiate(lookatTarget, transform.position + new Vector3(0, -1.5f, 0), transform.rotation) as GameObject;
+        GameObject clone = Instantiate(projectile, transform.position + new Vector3(0, -1.5f, 0), transform.rotation) as GameObject;
 
         // source and target positions
-        Vector3 pos = Vector3.zero;
+        Vector3 pos = transform.position;
         Vector3 target = _bullseye.position;
 
         // distance between target and source
         float dist = Vector3.Distance(pos, target);
 
         // rotate the object to face the target
+        //lookatTargetClone.transform.LookAt(target);
         clone.transform.LookAt(target);
 
         // calculate initival velocity required to land the cube on target using the formula (9)
-        float Vi = Mathf.Sqrt(dist * -Physics.gravity.y / (Mathf.Sin(Mathf.Deg2Rad * _angle) * 2));
+        float Vi = Mathf.Sqrt(dist * -Physics.gravity.y / (Mathf.Sin(Mathf.Deg2Rad * _angle)));
         float Vy, Vz;   // y,z components of the initial velocity
 
         Vy = Vi * Mathf.Sin(Mathf.Deg2Rad * _angle);
@@ -71,11 +88,15 @@ public class Launcher : MonoBehaviour
         Vector3 localVelocity = new Vector3(0f, Vy, Vz);
 
         // transform it to global vector
+        //Vector3 globalVelocity = lookatTargetClone.transform.TransformVector(localVelocity);
         Vector3 globalVelocity = clone.transform.TransformVector(localVelocity);
 
         // launch the cube by setting its initial velocity
-        clone.GetComponent<Rigidbody>().velocity = globalVelocity;
+        //lookatTargetClone.GetComponent<Rigidbody>().velocity = globalVelocity * .75f;
+        clone.GetComponent<Rigidbody>().velocity = globalVelocity * .75f;
 
+        //GameObject clone = Instantiate(projectile, transform.position + new Vector3(0, -2.5f, -1.5f), transform.rotation) as GameObject;
+        //clone.GetComponent<ProjectileLookAt>().target = lookatTargetClone.transform;
         // after launch revert the switch
         _targetReady = false;
     }

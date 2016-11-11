@@ -16,21 +16,17 @@ public class EnemyAiOne : MonoBehaviour
 		NavMeshAgent agent = GetComponent<NavMeshAgent>();
 		agent.destination = goal.position;
 	}
+
 	public void OnTriggerStay(Collider other)
 	{
 		if(other.gameObject.tag == "Tower")
 		{
 			if (timer <= 0) 
 			{
-				other.gameObject.GetComponent<TowerHealth> ().EnemyHit (damage);
+				other.gameObject.GetComponent<Health> ().TakeDamage (damage);
 				timer = 0.5f;
 			}
 			timer -= Time.deltaTime;
 		}
 	}
 }
-
-
-
-
-
