@@ -7,35 +7,14 @@ public class WeaponDamage : MonoBehaviour {
     public int damage;
     List<Collider> hits;
 
-	void OnTriggerStay(Collider other)
-    {
-        if (gameObject.tag == "Grenade")
+	void OnTriggerEnter(Collider other)
+    {        
+        if (other.tag == "Enemy")
         {
-            if (!hits.Contains(other))
-            {
-                hits.Add(other);
-            }
+            other.GetComponent<Health>().TakeDamage(damage);
+        }        
 
-            if (hits.Count > 0)
-            {
-                foreach (Collider col in hits)
-                {
-                    if (col.tag == "Enemy")
-                    {
-                        col.GetComponent<Health>().TakeDamage(damage);
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (other.tag == "Enemy")
-            {
-                other.GetComponent<Health>().TakeDamage(damage);
-            }
-        }
-
-        if(other.tag == "Ground" || other.tag == "Enemy")
+        if((other.tag == "Ground" || other.tag == "Enemy") && gameObject.tag != "Explosion")
             Destroy(gameObject);
     }
 }

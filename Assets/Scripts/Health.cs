@@ -5,8 +5,11 @@ public class Health : MonoBehaviour
 {
 	public float maxHealth = 100f;
 	public float curHealth = 0f;
+    public MeshRenderer rend;
 
 	public bool alive = true;
+
+    bool indicating;
 
 	// Use this for initialization
 	void Start () 
@@ -18,8 +21,7 @@ public class Health : MonoBehaviour
 	public void TakeDamage(int damage)
 	{    
 	    curHealth -= damage;
-
-	    float myHealth = curHealth / maxHealth;
+        StartCoroutine(DamageIndicator());
 
 		if (curHealth <= 0) 
 		{
@@ -35,6 +37,16 @@ public class Health : MonoBehaviour
         }
 	    Destroy (this.gameObject);
 	}
+
+    IEnumerator DamageIndicator()
+    {
+        if(!indicating)
+        {
+            indicating = true;
+            rend.material.color = Color.red;
+            yield return new WaitForSeconds(0.15f);
+            rend.material.color = Color.white;
+            indicating = false;
+        }
+    }
 }
-
-
