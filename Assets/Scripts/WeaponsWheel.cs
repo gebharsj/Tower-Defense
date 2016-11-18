@@ -32,6 +32,14 @@ public class WeaponsWheel : MonoBehaviour
         //Set Current weapon to 0
         currentWeapon = weapons[0];
         rotationAmount = 360.0f / weapons.Length;
+
+        foreach (GameObject weapon in weapons)
+        {
+            if (weapon == currentWeapon)
+                weapon.transform.FindChild("Launcher").gameObject.SetActive(true);
+            else if (weapon != currentWeapon)
+                weapon.transform.FindChild("Launcher").gameObject.SetActive(false);
+        }
     }
 
     void HandleTouchHandler(object sender, System.EventArgs e)
@@ -42,7 +50,7 @@ public class WeaponsWheel : MonoBehaviour
         {
             if (weaponNumber == weapons.Length - 1)
             {
-                weaponNumber = 0;                
+                weaponNumber = 0;
             }
             else
             {
@@ -72,6 +80,13 @@ public class WeaponsWheel : MonoBehaviour
         }
 
         currentWeapon = weapons[weaponNumber];
+        foreach(GameObject weapon in weapons)
+        {
+            if (weapon == currentWeapon)
+                weapon.transform.FindChild("Launcher").gameObject.SetActive(true);
+            else if (weapon != currentWeapon)
+                weapon.transform.FindChild("Launcher").gameObject.SetActive(false);
+        }
     }
 
     IEnumerator RotateCoroutine()

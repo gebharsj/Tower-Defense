@@ -17,8 +17,10 @@ public class Launcher : MonoBehaviour
     public float _angle;      // shooting angle
     [SerializeField]
     public float maxHeight;
+    public float fireDelay = 1.5f;
 
     public bool _targetReady;
+    bool firing;
 
     RaycastHit hit;
 
@@ -35,7 +37,8 @@ public class Launcher : MonoBehaviour
         if(touchArgs.TouchType == OVRTouchpad.TouchEvent.SingleTap)
         {
             _targetReady = true;
-            Launch();
+            //Launch();
+            StartCoroutine(FireCoroutine());
         }
     }
 
@@ -49,7 +52,7 @@ public class Launcher : MonoBehaviour
 
 	void FixedUpdate () 
     {
-        Ray ray = new Ray(transform.position, transform.forward);
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
         if(Physics.Raycast(ray, out hit, _layerMask))
         {
@@ -61,10 +64,20 @@ public class Launcher : MonoBehaviour
         }
     }
 
+    IEnumerator FireCoroutine()
+    {
+        if(!firing)
+        {
+            firing = true;
+            Launch();
+            yield return new WaitForSeconds(fireDelay);
+            firing = false;
+        }
+    }
+
     private void Launch()
     {
-        //GameObject lookatTargetClone = Instantiate(lookatTarget, transform.position + new Vector3(0, -1.5f, 0), transform.rotation) as GameObject;
-        GameObject clone = Instantiate(projectile, transform.position + new Vector3(0, -1.5f, 0), transform.rotation) as GameObject;
+        GameObject clone = Instantiate(projectile, transform.position, transform.rotation) as GameObject;       // + new Vector3(0, -1.5f, 0) if launching from camera
 
         // source and target positions
         Vector3 pos = transform.position;
@@ -74,7 +87,6 @@ public class Launcher : MonoBehaviour
         float dist = Vector3.Distance(pos, target);
 
         // rotate the object to face the target
-        //lookatTargetClone.transform.LookAt(target);
         clone.transform.LookAt(target);
 
         // calculate initival velocity required to land the cube on target using the formula (9)
@@ -88,15 +100,11 @@ public class Launcher : MonoBehaviour
         Vector3 localVelocity = new Vector3(0f, Vy, Vz);
 
         // transform it to global vector
-        //Vector3 globalVelocity = lookatTargetClone.transform.TransformVector(localVelocity);
         Vector3 globalVelocity = clone.transform.TransformVector(localVelocity);
 
         // launch the cube by setting its initial velocity
-        //lookatTargetClone.GetComponent<Rigidbody>().velocity = globalVelocity * .75f;
         clone.GetComponent<Rigidbody>().velocity = globalVelocity * .75f;
 
-        //GameObject clone = Instantiate(projectile, transform.position + new Vector3(0, -2.5f, -1.5f), transform.rotation) as GameObject;
-        //clone.GetComponent<ProjectileLookAt>().target = lookatTargetClone.transform;
         // after launch revert the switch
         _targetReady = false;
     }

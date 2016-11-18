@@ -28,7 +28,11 @@ public class Health : MonoBehaviour
 	}
 
 	void Die()
-	{   
+	{
+        if(gameObject.tag == "Tower")
+        {
+            transform.parent.GetComponent<FireWrangler>().RemovePart(gameObject);
+        }
 	    Destroy (this.gameObject);
 	}
 }

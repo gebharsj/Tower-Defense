@@ -6,16 +6,15 @@ public class EnemyAiOne : MonoBehaviour
 	public int scoreToGive;			//The score that will be added once the enemy is killed
 	public int damage;
 		
-	public float timer = 1.0f;
+	public float timer = 3.0f;
+    NavMeshAgent agent;
 
-	public Transform goal;   //The GameObject of which the enemy will move towards and attack
-
-	// Use this for initialization
-	void Start () 
+    // Use this for initialization
+    void Start () 
 	{
-		NavMeshAgent agent = GetComponent<NavMeshAgent>();
-		agent.destination = goal.position;
-	}
+        agent = GetComponent<NavMeshAgent>();
+        agent.SetDestination(GameObject.Find("Tower").transform.position);
+    }
 
 	public void OnTriggerStay(Collider other)
 	{
