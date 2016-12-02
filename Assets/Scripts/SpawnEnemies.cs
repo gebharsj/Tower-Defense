@@ -27,7 +27,7 @@ public class SpawnEnemies : MonoBehaviour {
 	}
 
     IEnumerator Spawn()
-    {
+    {        
         ChooseSpawnOrigin();
 
         switch (_spawnOrigin)

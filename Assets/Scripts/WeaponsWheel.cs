@@ -46,7 +46,7 @@ public class WeaponsWheel : MonoBehaviour
     {
         OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
 
-        if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Left)
+        if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Left && !rotating)
         {
             if (weaponNumber == weapons.Length - 1)
             {
@@ -62,7 +62,7 @@ public class WeaponsWheel : MonoBehaviour
 
             StartCoroutine(RotateCoroutine());
         }
-        else if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Right)
+        else if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Right && !rotating)
         {
             if (weaponNumber == 0)
             {

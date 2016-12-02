@@ -8,13 +8,35 @@ public class WeaponDamage : MonoBehaviour {
     List<Collider> hits;
 
 	void OnTriggerEnter(Collider other)
-    {        
+    {
+        if(gameObject.tag == "Boulder")
+        {
+            if(other.tag == "Tower")
+            {
+                other.GetComponent<Health>().TakeDamage(damage);
+                Destroy(gameObject);
+            }
+        }
+        else
+        {
+            if (other.tag == "Enemy")
+            {
+                other.GetComponent<Health>().TakeDamage(damage);
+            }
+
+            if ((other.tag == "Ground" || other.tag == "Enemy") && gameObject.tag != "Explosion")
+                Destroy(gameObject);
+        }
+    }
+
+    void OnParticleCollision(GameObject other)
+    {
         if (other.tag == "Enemy")
         {
             other.GetComponent<Health>().TakeDamage(damage);
-        }        
+        }
 
-        if((other.tag == "Ground" || other.tag == "Enemy") && gameObject.tag != "Explosion")
-            Destroy(gameObject);
+        if ((other.tag == "Ground" || other.tag == "Enemy") && gameObject.tag != "Explosion")
+            Destroy(gameObject, .25f);
     }
 }
