@@ -7,6 +7,7 @@ public class EnemyAiOne : MonoBehaviour
 	public int damage;
 		
 	public float timer = 3.0f;
+    public Animator aiAnimator;
     NavMeshAgent agent;
     bool isTrolling;
     GameObject tower;
@@ -24,6 +25,8 @@ public class EnemyAiOne : MonoBehaviour
                 Debug.LogError("No Hand");
         }
         agent.SetDestination(tower.transform.position);
+        if (aiAnimator != null)
+            aiAnimator.SetBool("isRunning", true);
     }
 
     //IEnumerator TrollThings()
@@ -43,6 +46,11 @@ public class EnemyAiOne : MonoBehaviour
             {
                 if (timer <= 0)
                 {
+                    if (aiAnimator != null)
+                    {
+                        aiAnimator.SetBool("isRunning", false);
+                        aiAnimator.SetBool("isAttacking", true);
+                    }
                     other.gameObject.GetComponent<Health>().TakeDamage(damage);
                     timer = 0.5f;
                 }
@@ -57,11 +65,12 @@ public class EnemyAiOne : MonoBehaviour
                 if (Vector3.Distance(transform.position, other.transform.position) <= 4f)
                 {
                     agent.Stop();
+                    aiAnimator.SetBool("isRunning", false);
+                    aiAnimator.SetBool("isLifting", true);
                     other.transform.position = hand.transform.position;
                     transform.LookAt(tower.transform);
                     hand.GetComponent<Launcher>().TrollLaunch(other.gameObject);
                     StartCoroutine(WaitToMove());
-                    //print(agent.destination);
                 }
             }
         }
@@ -85,6 +94,5 @@ public class EnemyAiOne : MonoBehaviour
         yield return new WaitForSeconds(1f);
         agent.SetDestination(tower.transform.position);
         agent.Resume();
-        print(agent.destination);
     }
 }

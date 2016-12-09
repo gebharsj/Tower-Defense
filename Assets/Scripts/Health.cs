@@ -5,11 +5,12 @@ public class Health : MonoBehaviour
 {
 	public float maxHealth = 100f;
 	public float curHealth = 0f;
-    public MeshRenderer rend;
+    public Renderer rend;
 
 	public bool alive = true;
 
     bool indicating;
+    bool dying;
 
 	// Use this for initialization
 	void Start () 
@@ -31,11 +32,13 @@ public class Health : MonoBehaviour
 
 	void Die()
 	{
-        if(gameObject.tag == "Tower")
+        if (gameObject.tag == "Enemy")
+            StartCoroutine(Death());
+        if (gameObject.tag == "Tower")
         {
             transform.parent.GetComponent<FireWrangler>().RemovePart(gameObject);
+            Destroy(this.gameObject);
         }
-	    Destroy (this.gameObject);
 	}
 
     IEnumerator DamageIndicator()
@@ -47,6 +50,19 @@ public class Health : MonoBehaviour
             yield return new WaitForSeconds(0.15f);
             rend.material.color = Color.white;
             indicating = false;
+        }
+    }
+
+    IEnumerator Death()
+    {
+        if(!dying)
+        {
+            dying = true;
+            GetComponent<NavMeshAgent>().Stop();
+            GetComponentInChildren<Animator>().SetBool("isDead", true);
+            yield return new WaitForSeconds(4.6f);
+            Destroy(this.gameObject);
+            dying = false;
         }
     }
 }
