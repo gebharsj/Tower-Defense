@@ -12,8 +12,11 @@ public class Health : MonoBehaviour
     bool indicating;
     bool dying;
 
-	// Use this for initialization
-	void Start () 
+    public AudioSource damageSound;
+    public AudioSource crumbleSound;
+
+    // Use this for initialization
+    void Start () 
 	{
 		alive = true;
 		curHealth = maxHealth;
@@ -22,6 +25,7 @@ public class Health : MonoBehaviour
 	public void TakeDamage(int damage)
 	{    
 	    curHealth -= damage;
+        damageSound.Play();
         StartCoroutine(DamageIndicator());
 
 		if (curHealth <= 0) 
@@ -36,6 +40,7 @@ public class Health : MonoBehaviour
             StartCoroutine(Death());
         if (gameObject.tag == "Tower")
         {
+            crumbleSound.Play();
             transform.parent.GetComponent<FireWrangler>().RemovePart(gameObject);
             Destroy(this.gameObject);
         }

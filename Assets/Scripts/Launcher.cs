@@ -23,6 +23,8 @@ public class Launcher : MonoBehaviour
     bool firing;
 
     RaycastHit hit;
+   public  AudioSource firingSound;
+    public AudioSource loadSound;
 
     void Start()
     {
@@ -85,6 +87,7 @@ public class Launcher : MonoBehaviour
 
     private void Launch()
     {
+        firingSound.Play();
         GameObject clone = Instantiate(projectile, transform.position, transform.rotation) as GameObject;       // + new Vector3(0, -1.5f, 0) if launching from camera
 
         // source and target positions
@@ -115,6 +118,7 @@ public class Launcher : MonoBehaviour
 
         // after launch revert the switch
         _targetReady = false;
+      loadSound.Play();
     }
 
     // Returns a random target from the target pool
