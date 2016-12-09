@@ -32,54 +32,47 @@ public class WeaponsWheel : MonoBehaviour
         //Set Current weapon to 0
         currentWeapon = weapons[0];
         rotationAmount = 360.0f / weapons.Length;
-
-        foreach (GameObject weapon in weapons)
-        {
-            if (weapon == currentWeapon)
-                weapon.transform.FindChild("Launcher").gameObject.SetActive(true);
-            else if (weapon != currentWeapon)
-                weapon.transform.FindChild("Launcher").gameObject.SetActive(false);
-        }
+        SetWeapon();
+        //foreach (GameObject weapon in weapons)
+        //{
+        //    if (weapon == currentWeapon)
+        //        weapon.transform.FindChild("Launcher").gameObject.SetActive(true);
+        //    else if (weapon != currentWeapon)
+        //        weapon.transform.FindChild("Launcher").gameObject.SetActive(false);
+        //}
     }
 
     void HandleTouchHandler(object sender, System.EventArgs e)
     {
-        OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
-
-        if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Left && !rotating)
+        if (!rotating)
         {
-            if (weaponNumber == weapons.Length - 1)
+            OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
+
+            if (touchArgs.TouchType == OVRTouchpad.TouchEvent.Left)
             {
-                weaponNumber = 0;
+                if (weaponNumber == weapons.Length - 1)
+                    weaponNumber = 0;
+                else
+                    weaponNumber++;
+
+                if (!rotating)
+                    dir = Direction.Left;
+
+                StartCoroutine(RotateCoroutine());
             }
-            else
+            else if (touchArgs.TouchType == OVRTouchpad.TouchEvent.Right)
             {
-                weaponNumber = (weaponNumber + 1);
+                if (weaponNumber == 0)
+                    weaponNumber = weapons.Length - 1;
+                else
+                    weaponNumber--;
+
+                if (!rotating)
+                    dir = Direction.Right;
+
+                StartCoroutine(RotateCoroutine());
             }
-
-            if(!rotating)
-                dir = Direction.Left;
-
-            StartCoroutine(RotateCoroutine());
-        }
-        else if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Right && !rotating)
-        {
-            if (weaponNumber == 0)
-            {
-                weaponNumber = weapons.Length - 1;
-            }
-            else
-            {
-                weaponNumber = (weaponNumber - 1);
-            }
-
-            if (!rotating)
-                dir = Direction.Right;
-
-            StartCoroutine(RotateCoroutine());
-        }
-
-        
+        }      
     }
 
     IEnumerator RotateCoroutine()
@@ -88,23 +81,13 @@ public class WeaponsWheel : MonoBehaviour
         {
             rotating = true;
             if (dir == Direction.Left)
-            {
-                newY = disc.transform.localRotation.eulerAngles.y - rotationAmount;
-            }
+                newY = Camera.main.transform.eulerAngles.y - (rotationAmount * weaponNumber);
             else if (dir == Direction.Right)
-            {
-                newY = disc.transform.localRotation.eulerAngles.y + rotationAmount;
-            }
+                newY = Camera.main.transform.eulerAngles.y - (rotationAmount * weaponNumber);
 
             yield return new WaitUntil(RotateWeapons);
             timer = 0;
-            currentWeapon = weapons[weaponNumber];
-            foreach (GameObject weapon in weapons)
-            {
-                weapon.transform.FindChild("Launcher").gameObject.SetActive(false);
-            }
-
-            currentWeapon.transform.FindChild("Launcher").gameObject.SetActive(true);
+            SetWeapon();
             rotating = false;
         }
     }
@@ -112,19 +95,24 @@ public class WeaponsWheel : MonoBehaviour
     bool RotateWeapons()
     {
         timer += 1 / 60.0f;
+        disc.transform.localRotation = Quaternion.Lerp(disc.transform.localRotation, Quaternion.Euler(0, newY, 0), Time.deltaTime * 8f);
         if (dir == Direction.Left)
-        {
-            disc.transform.localRotation = Quaternion.Lerp(disc.transform.localRotation, Quaternion.Euler(0, newY, 0), Time.deltaTime * 8f);
-            if (disc.transform.localRotation.eulerAngles.y <= newY + .05f)
+        { 
+            if (disc.transform.eulerAngles.y <= newY + .05f)
+            {
+                disc.transform.eulerAngles = new Vector3(0, newY, 0);
                 return true;
+            }
             else
                 return false;
         }
         else if (dir == Direction.Right)
         {
-            disc.transform.localRotation = Quaternion.Lerp(disc.transform.localRotation, Quaternion.Euler(0, newY, 0), Time.deltaTime * 8f);
-            if (disc.transform.localRotation.eulerAngles.y >= newY - .05f)
+            if (disc.transform.eulerAngles.y >= newY - .05f)
+            {
+                disc.transform.eulerAngles = new Vector3(0, newY, 0);
                 return true;
+            }
             else
                 return false;
         }
@@ -134,24 +122,28 @@ public class WeaponsWheel : MonoBehaviour
 
     void Update()
     {
-        if (timer >= .75f)
+        if (timer >= .6f)
         {
             StopAllCoroutines();
             timer = 0;
+            SetWeapon();
             rotating = false;
-
-            currentWeapon = weapons[weaponNumber];
-            foreach (GameObject weapon in weapons)
-            {
-                weapon.transform.FindChild("Launcher").gameObject.SetActive(false);
-            }
-
-            currentWeapon.transform.FindChild("Launcher").gameObject.SetActive(true);
         }
     }
 
     void FixedUpdate()
     {
-        transform.rotation = Quaternion.Euler(0, _camera.transform.rotation.eulerAngles.y, 0);
+        transform.rotation = Quaternion.Euler(0, _camera.transform.eulerAngles.y, 0);
+    }
+
+    void SetWeapon()
+    {
+        disc.transform.eulerAngles = new Vector3(0, newY, 0);        
+        foreach (GameObject weapon in weapons)
+        {
+            weapon.SetActive(false);    //.transform.FindChild("Launcher").gameObject
+        }
+        currentWeapon = weapons[weaponNumber];
+        currentWeapon.SetActive(true);  //transform.FindChild("Launcher").gameObject.
     }
 }

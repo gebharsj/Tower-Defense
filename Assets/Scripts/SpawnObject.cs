@@ -13,11 +13,14 @@ public class SpawnObject : MonoBehaviour {
 
     void HandleTouchHandler(object sender, System.EventArgs e)
     {
-        OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
-
-        if (touchArgs.TouchType == OVRTouchpad.TouchEvent.SingleTap)
+        if (gameObject.name == "Launcher" && gameObject.activeInHierarchy)
         {
-            Instantiate(obj, transform.position, Quaternion.identity);
+            OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
+
+            if (touchArgs.TouchType == OVRTouchpad.TouchEvent.SingleTap)
+            {
+                Instantiate(obj, transform.position, Quaternion.identity);
+            }
         }
     }
 

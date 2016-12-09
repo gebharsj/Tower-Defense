@@ -32,7 +32,7 @@ public class Health : MonoBehaviour
 
 	void Die()
 	{
-        if (gameObject.tag == "Enemy")
+        if (gameObject.tag == "Enemy" || gameObject.tag == "Troll")
             StartCoroutine(Death());
         if (gameObject.tag == "Tower")
         {
