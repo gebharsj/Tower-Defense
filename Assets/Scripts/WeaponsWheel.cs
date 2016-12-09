@@ -46,7 +46,7 @@ public class WeaponsWheel : MonoBehaviour
     {
         OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
 
-        if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Left)
+        if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Left && !rotating)
         {
             if (weaponNumber == weapons.Length - 1)
             {
@@ -62,7 +62,7 @@ public class WeaponsWheel : MonoBehaviour
 
             StartCoroutine(RotateCoroutine());
         }
-        else if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Right)
+        else if(touchArgs.TouchType == OVRTouchpad.TouchEvent.Right && !rotating)
         {
             if (weaponNumber == 0)
             {
@@ -79,14 +79,7 @@ public class WeaponsWheel : MonoBehaviour
             StartCoroutine(RotateCoroutine());
         }
 
-        currentWeapon = weapons[weaponNumber];
-        foreach(GameObject weapon in weapons)
-        {
-            if (weapon == currentWeapon)
-                weapon.transform.FindChild("Launcher").gameObject.SetActive(true);
-            else if (weapon != currentWeapon)
-                weapon.transform.FindChild("Launcher").gameObject.SetActive(false);
-        }
+        
     }
 
     IEnumerator RotateCoroutine()
@@ -105,6 +98,13 @@ public class WeaponsWheel : MonoBehaviour
 
             yield return new WaitUntil(RotateWeapons);
             timer = 0;
+            currentWeapon = weapons[weaponNumber];
+            foreach (GameObject weapon in weapons)
+            {
+                weapon.transform.FindChild("Launcher").gameObject.SetActive(false);
+            }
+
+            currentWeapon.transform.FindChild("Launcher").gameObject.SetActive(true);
             rotating = false;
         }
     }
@@ -139,6 +139,14 @@ public class WeaponsWheel : MonoBehaviour
             StopAllCoroutines();
             timer = 0;
             rotating = false;
+
+            currentWeapon = weapons[weaponNumber];
+            foreach (GameObject weapon in weapons)
+            {
+                weapon.transform.FindChild("Launcher").gameObject.SetActive(false);
+            }
+
+            currentWeapon.transform.FindChild("Launcher").gameObject.SetActive(true);
         }
     }
 

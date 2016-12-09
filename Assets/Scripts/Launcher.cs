@@ -8,7 +8,6 @@ public class Launcher : MonoBehaviour
     // handles
     [SerializeField] private Transform _bullseye;    // target transform
     public GameObject projectile;
-    public GameObject lookatTarget;
 
     // Editor variables
     [SerializeField]
@@ -18,6 +17,7 @@ public class Launcher : MonoBehaviour
     [SerializeField]
     public float maxHeight;
     public float fireDelay = 1.5f;
+    public bool isTroll;
 
     public bool _targetReady;
     bool firing;
@@ -32,36 +32,44 @@ public class Launcher : MonoBehaviour
 
     void HandleTouchHandler(object sender, System.EventArgs e)
     {
-        OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
-
-        if(touchArgs.TouchType == OVRTouchpad.TouchEvent.SingleTap)
+        if (!isTroll)
         {
-            _targetReady = true;
-            //Launch();
-            StartCoroutine(FireCoroutine());
+            OVRTouchpad.TouchArgs touchArgs = (OVRTouchpad.TouchArgs)e;
+
+            if (touchArgs.TouchType == OVRTouchpad.TouchEvent.SingleTap)
+            {
+                _targetReady = true;
+                //Launch();
+                StartCoroutine(FireCoroutine());
+            }
         }
     }
 
     void Update()
     {
-        //if (Input.GetButtonDown("Fire1") && _targetReady)
-        //{
-        //    Launch();
-        //}
+        
     }    
 
 	void FixedUpdate () 
     {
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-
-        if(Physics.Raycast(ray, out hit, _layerMask))
+        if (!isTroll)
         {
-            if(hit.transform.tag == "Ground")
+            Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+
+            if (Physics.Raycast(ray, out hit, _layerMask))
             {
-                _targetReady = true;
-                AcquireTarget(hit.point);
+                if (hit.transform.tag == "Ground")
+                {
+                    _targetReady = true;
+                    AcquireTarget(hit.point);
+                }
             }
         }
+    }
+
+    void CallCoroutine(string coroutine)
+    {
+        StartCoroutine(coroutine);
     }
 
     IEnumerator FireCoroutine()
@@ -157,5 +165,38 @@ public class Launcher : MonoBehaviour
         _bullseye.position = target;
         // get ready to launch
         _targetReady = true;
+    }
+
+    public void TrollLaunch(GameObject projectile)
+    {
+        // source and target positions
+        Vector3 pos = transform.position;
+        Vector3 target = Vector3.zero;
+
+        // distance between target and source
+        float dist = Vector3.Distance(pos, target);
+
+        // rotate the object to face the target
+        projectile.transform.LookAt(target);
+
+        // calculate initival velocity required to land the cube on target using the formula (9)
+        float Vi = Mathf.Sqrt(dist * -Physics.gravity.y / (Mathf.Sin(Mathf.Deg2Rad * _angle)));
+        float Vy, Vz;   // y,z components of the initial velocity
+
+        Vy = Vi * Mathf.Sin(Mathf.Deg2Rad * _angle);
+        Vz = Vi * Mathf.Cos(Mathf.Deg2Rad * _angle);
+
+        //create the velocity vector in local space
+        Vector3 localVelocity = new Vector3(0f, Vy, Vz);
+
+        // transform it to global vector
+        Vector3 globalVelocity = projectile.transform.TransformVector(localVelocity);
+        //print(projectile.GetComponent<Rigidbody>().velocity);
+
+        // launch the cube by setting its initial velocity
+        projectile.GetComponent<Rigidbody>().velocity = globalVelocity;
+
+        // after launch revert the switch
+        _targetReady = false;
     }
 }
