@@ -18,6 +18,8 @@ public class Launcher : MonoBehaviour
     public float maxHeight;
     public float fireDelay = 1.5f;
     public bool isTroll;
+    public AudioSource loadSound;
+    public AudioSource fireSound;
 
     public bool _targetReady;
     bool firing;
@@ -74,7 +76,8 @@ public class Launcher : MonoBehaviour
 
     IEnumerator FireCoroutine()
     {
-        if(!firing)
+        loadSound.Play();
+        if (!firing)
         {
             firing = true;
             Launch();
@@ -85,6 +88,7 @@ public class Launcher : MonoBehaviour
 
     private void Launch()
     {
+        fireSound.Play();
         GameObject clone = Instantiate(projectile, transform.position, transform.rotation) as GameObject;       // + new Vector3(0, -1.5f, 0) if launching from camera
 
         // source and target positions
