@@ -4,6 +4,8 @@ using System.Collections;
 public class SpawnObject : MonoBehaviour {
 
     public GameObject obj;
+    [SerializeField]
+    AudioSource cauldronPour;
 
     void Start()
     {
@@ -37,6 +39,7 @@ public class SpawnObject : MonoBehaviour {
         {
             if (other.tag == "Ground" || other.tag == "Enemy")
             {
+                cauldronPour.Play();
                 Instantiate(obj, transform.position, Quaternion.identity);
             }
         }
