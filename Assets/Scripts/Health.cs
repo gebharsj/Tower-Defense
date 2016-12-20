@@ -6,6 +6,12 @@ public class Health : MonoBehaviour
 	public float maxHealth = 100f;
 	public float curHealth = 0f;
     public Renderer rend;
+    [SerializeField]
+    AudioSource towerClash;
+    [SerializeField]
+    AudioSource towerCrumble;
+   
+  
 
 	public bool alive = true;
 
@@ -22,6 +28,7 @@ public class Health : MonoBehaviour
 	public void TakeDamage(int damage)
 	{    
 	    curHealth -= damage;
+        towerClash.Play();
         StartCoroutine(DamageIndicator());
 
 		if (curHealth <= 0) 
@@ -36,6 +43,7 @@ public class Health : MonoBehaviour
             StartCoroutine(Death());
         if (gameObject.tag == "Tower")
         {
+            towerCrumble.Play();
             transform.parent.GetComponent<FireWrangler>().RemovePart(gameObject);
             Destroy(this.gameObject);
         }
