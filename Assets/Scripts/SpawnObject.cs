@@ -22,6 +22,7 @@ public class SpawnObject : MonoBehaviour {
             if (touchArgs.TouchType == OVRTouchpad.TouchEvent.SingleTap)
             {
                 Instantiate(obj, transform.position, Quaternion.identity);
+                cauldronPour.Play();
             }
         }
     }
@@ -39,8 +40,9 @@ public class SpawnObject : MonoBehaviour {
         {
             if (other.tag == "Ground" || other.tag == "Enemy")
             {
-                cauldronPour.Play();
+                
                 Instantiate(obj, transform.position, Quaternion.identity);
+                cauldronPour.Play();
             }
         }
     }
