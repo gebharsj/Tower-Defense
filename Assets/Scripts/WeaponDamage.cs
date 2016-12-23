@@ -19,24 +19,24 @@ public class WeaponDamage : MonoBehaviour {
         }
         else
         {
-            if (other.tag == "Enemy")
+            if (other.tag == "Enemy" || other.tag == "Troll")
             {
                 other.GetComponent<Health>().TakeDamage(damage);
             }
 
-            if ((other.tag == "Ground" || other.tag == "Enemy") && gameObject.tag != "Explosion")
+            if ((other.tag == "Ground" || other.tag == "Enemy" || other.tag == "Troll") && gameObject.tag != "Explosion")
                 Destroy(gameObject);
         }
     }
 
     void OnParticleCollision(GameObject other)
     {
-        if (other.tag == "Enemy")
+        if (other.tag == "Enemy" || other.tag == "Troll")
         {
             other.GetComponent<Health>().TakeDamage(damage);
         }
 
-        if ((other.tag == "Ground" || other.tag == "Enemy") && gameObject.tag != "Explosion")
+        if ((other.tag == "Ground" || other.tag == "Enemy" || other.tag == "Troll") && gameObject.tag != "Explosion")
             Destroy(gameObject, .25f);
     }
 }
