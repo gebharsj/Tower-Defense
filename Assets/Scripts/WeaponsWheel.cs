@@ -95,12 +95,12 @@ public class WeaponsWheel : MonoBehaviour
     bool RotateWeapons()
     {
         timer += 1 / 60.0f;
-        disc.transform.localRotation = Quaternion.Lerp(disc.transform.localRotation, Quaternion.Euler(0, newY, 0), Time.deltaTime * 8f);
+        disc.transform.localRotation = Quaternion.Lerp(disc.transform.localRotation, Quaternion.Euler(-90, 0, newY), Time.deltaTime * 8f);
         if (dir == Direction.Left)
         { 
             if (disc.transform.eulerAngles.y <= newY + .05f)
             {
-                disc.transform.eulerAngles = new Vector3(0, newY, 0);
+                disc.transform.eulerAngles = new Vector3(-90, 0, newY);
                 return true;
             }
             else
@@ -108,9 +108,9 @@ public class WeaponsWheel : MonoBehaviour
         }
         else if (dir == Direction.Right)
         {
-            if (disc.transform.eulerAngles.y >= newY - .05f)
+            if (disc.transform.eulerAngles.z >= newY - .05f)
             {
-                disc.transform.eulerAngles = new Vector3(0, newY, 0);
+                disc.transform.eulerAngles = new Vector3(-90, 0, newY);
                 return true;
             }
             else
@@ -138,7 +138,7 @@ public class WeaponsWheel : MonoBehaviour
 
     void SetWeapon()
     {
-        disc.transform.eulerAngles = new Vector3(0, newY, 0);        
+        disc.transform.eulerAngles = new Vector3(-90, 0, newY);        
         foreach (GameObject weapon in weapons)
         {
             weapon.SetActive(false);    //.transform.FindChild("Launcher").gameObject
