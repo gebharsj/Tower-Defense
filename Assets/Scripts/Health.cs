@@ -28,7 +28,10 @@ public class Health : MonoBehaviour
 	public void TakeDamage(int damage)
 	{    
 	    curHealth -= damage;
-        towerClash.Play();
+        if (gameObject.tag == "Tower")
+        {
+            towerClash.Play();
+        }
         StartCoroutine(DamageIndicator());
 
 		if (curHealth <= 0) 

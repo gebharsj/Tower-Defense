@@ -42,7 +42,7 @@ public class SpawnObject : MonoBehaviour {
             {
                 
                 Instantiate(obj, transform.position, Quaternion.identity);
-                cauldronPour.Play();
+                //cauldronPour.Play();
             }
         }
     }

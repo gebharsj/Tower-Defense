@@ -20,6 +20,9 @@ public class Launcher : MonoBehaviour
     public bool isTroll;
     [SerializeField]
     AudioSource fireSound;
+    [SerializeField]
+    AudioSource loadSound;
+
 
     public bool _targetReady;
     bool firing;
@@ -82,6 +85,7 @@ public class Launcher : MonoBehaviour
             Launch();
             yield return new WaitForSeconds(fireDelay);
             firing = false;
+            loadSound.Play();
         }
     }
 
