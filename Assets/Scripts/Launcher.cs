@@ -18,6 +18,11 @@ public class Launcher : MonoBehaviour
     public float maxHeight;
     public float fireDelay = 1.5f;
     public bool isTroll;
+    [SerializeField]
+    AudioSource fireSound;
+    [SerializeField]
+    AudioSource loadSound;
+
 
     public bool _targetReady;
     bool firing;
@@ -80,13 +85,15 @@ public class Launcher : MonoBehaviour
             Launch();
             yield return new WaitForSeconds(fireDelay);
             firing = false;
+            loadSound.Play();
         }
     }
 
     private void Launch()
     {
         GameObject clone = Instantiate(projectile, transform.position, transform.rotation) as GameObject;       // + new Vector3(0, -1.5f, 0) if launching from camera
-
+      
+        fireSound.Play();
         // source and target positions
         Vector3 pos = transform.position;
         Vector3 target = _bullseye.position;

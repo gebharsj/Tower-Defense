@@ -4,6 +4,8 @@ using System.Collections;
 public class SpawnObject : MonoBehaviour {
 
     public GameObject obj;
+    [SerializeField]
+    AudioSource cauldronPour;
 
     void Start()
     {
@@ -20,6 +22,7 @@ public class SpawnObject : MonoBehaviour {
             if (touchArgs.TouchType == OVRTouchpad.TouchEvent.SingleTap)
             {
                 Instantiate(obj, transform.position, Quaternion.identity);
+                cauldronPour.Play();
             }
         }
     }
@@ -37,7 +40,9 @@ public class SpawnObject : MonoBehaviour {
         {
             if (other.tag == "Ground" || other.tag == "Enemy")
             {
+                
                 Instantiate(obj, transform.position, Quaternion.identity);
+                //cauldronPour.Play();
             }
         }
     }
